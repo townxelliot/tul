@@ -49,6 +49,7 @@ matching elements) rather than a NodeList
 *   TUL.keygen(): key generating function which generates
 unique random keys (though not unique across multiple TUL instances, e.g.
 if you use it for database keys which are written from multiple pages)
+*   TUL.find(): find items in a collection which satisfy a test function
 *   Array.forEach(), Array.find(): shims for ES6 array methods
 *   Array.map(): similar to Underscore's _.map() function
 *   TUL.chomp(): remove trailing character from a string (useful for
