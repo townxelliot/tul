@@ -263,10 +263,7 @@
         r.sh(key, value);
       });
 
-      if (opts.body) {
-        r.sh('X-Requested-With', 'XMLHttpRequest');
-      }
-
+      r.sh('X-Requested-With', 'XMLHttpRequest');
       r.send(opts.body);
     },
 
