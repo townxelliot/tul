@@ -64,11 +64,19 @@ collections/models
 See the source for details (I may get round to some automated docs
 eventually).
 
+# Build
+
+To make a minified version of the library:
+
+    grunt min
+
+The output goes into `build/TUL.min.js`.
+
 # Tests
 
-You can run the node-testable pieces with grunt (the default target):
+You can run the node-testable pieces with grunt:
 
-    grunt
+    grunt test
 
 The non-node pieces are manually tested using the HTML files in the
 `examples/` directory.

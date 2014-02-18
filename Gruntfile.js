@@ -16,5 +16,7 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.registerTask('default', ['mochaccino', 'uglify']);
+  grunt.registerTask('min', ['uglify']);
+  grunt.registerTask('test', ['mochaccino']);
+  grunt.registerTask('default', ['test', 'min']);
 };
