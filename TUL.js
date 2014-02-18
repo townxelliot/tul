@@ -2,9 +2,9 @@
 // NB arguments are passed to the anonymous function so I don't have
 // to declare them with var (to save characters) and they can be
 // minified
-(function (M, AP, doc, win, idx, collRe, propRe, TUL, APBind) {
+(function (M, A, doc, win, idx, collRe, propRe, TUL, ABind) {
   M = Math;
-  AP = Array.prototype;
+  A = Array.prototype;
   doc = (typeof document == 'undefined' ? null : document);
   win = (typeof window == 'undefined' ? global : window);
 
@@ -343,7 +343,7 @@
         this.evts = this.evts || {};
         if (event in this.evts) {
           for (var i = 0; i < this.evts[event].length; i++){
-            this.evts[event][i].apply(this, AP.slice.call(arguments, 1));
+            this.evts[event][i].apply(this, A.slice.call(arguments, 1));
           }
         }
       }
@@ -370,7 +370,7 @@
      */
     ext: function (obj) {
       var self = this;
-      AP.slice.call(arguments, 1).forEach(function (o) {
+      A.slice.call(arguments, 1).forEach(function (o) {
         self.each(o, function (v, k) {
           obj[k] = (typeof v === 'function' ? v.bind(obj) : v);
         });
@@ -381,7 +381,7 @@
     /*
      * Very, very simple, unforgiving (but small) templating.
      */
-    // this needs AP.forEach on older browsers (see above)
+    // this needs A.forEach on older browsers (see above)
     //
     // use a template string like:
     //
@@ -479,18 +479,18 @@
   /*
    * Extra array methods on the Array.prototype (so all arrays get them)
    */
-  APBind = function (fnToBind) {
-    AP[fnToBind] = AP[fnToBind] || function () {
-      var args = AP.slice.call(arguments, 0);
+  ABind = function (fnToBind) {
+    A[fnToBind] = A[fnToBind] || function () {
+      var args = A.slice.call(arguments, 0);
       args.unshift(this);
       return TUL[fnToBind].apply(this, args);
     };
   };
 
   // shims for Array.prototype
-  APBind('forEach');
-  APBind('find');
-  APBind('map');
+  ABind('forEach');
+  ABind('find');
+  ABind('map');
 
   // export TUL object
   if (typeof module !== 'undefined' && module.exports) {
