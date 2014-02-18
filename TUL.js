@@ -186,7 +186,7 @@
     // thisObj: the object to use as "this" when calling test(); defaults
     // to undefined
     find: function (obj, test, thisObj) {
-      var selected = undefined;
+      var selected;
 
       for (var k in obj) {
         if (test.call(thisObj, obj[k], k, obj)) {
@@ -209,18 +209,12 @@
     },
 
     // random key generator; generated keys are 8 random characters;
-    // '-' + index is added to the key; if index is not supplied, a
+    // '-' + sfx is added to the key; if sfx is not supplied, a
     // global index is used
-    keygen: function (index) {
-      index = index || (idx += 1);
-      var r;
-
-      var str = 'xxxxxxxx'.replace(/x/g, function (c) {
-        r = M.random() * 16 | 0;
-        return r.toString(16);
-      });
-
-      return str += '-' + index;
+    keygen: function (sfx) {
+      return 'xxxxxxxx'.replace(/x/g, function () {
+        return (M.random() * 16 | 0).toString(16);
+      }) + '-' + (sfx ? sfx : idx += 1);
     },
 
     // browser-only HTTP request; NB this will not do cross-domain
@@ -234,15 +228,14 @@
     // {'Content-Type': 'application/json'}
     // opts.method (default 'GET')
     // opts.body: POST body
-    // opts.r: http request implementation; if not set, defaults
-    // to XMLHttpRequest
+    // r: http request implementation; if not set, defaults
+    // to new XMLHttpRequest
     // partly based on http://microajax.googlecode.com/svn/trunk/microajax.js
     // (New BSD licence)
-    req: function (opts) {
+    req: function (opts, r) {
       opts = opts || {};
 
-      var r = opts.r || new XMLHttpRequest();
-      r.sh = r.setRequestHeader.bind(r);
+      r = r || new XMLHttpRequest();
 
       // now make the request
       r.onreadystatechange = function () {
@@ -265,10 +258,10 @@
 
       opts.headers = opts.headers || {};
       this.each(opts.headers, function (value, key) {
-        r.sh(key, value);
+        r.setRequestHeader(key, value);
       });
 
-      r.sh('X-Requested-With', 'XMLHttpRequest');
+      r.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
       r.send(opts.body);
     },
 
