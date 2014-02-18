@@ -4,6 +4,20 @@ var TUL = require('../TUL');
 
 describe('TUL', function () {
 
+  describe('keygen()', function () {
+
+    it('should append an index string', function () {
+      TUL.keygen('foo').should.match(/-foo$/);
+    });
+
+    it('should append its own index if not supplied', function () {
+      TUL.keygen().should.match(/[\S]{8}-1$/);
+      TUL.keygen().should.match(/[\S]{8}-2$/);
+      TUL.keygen().should.match(/[\S]{8}-3$/);
+    });
+
+  });
+
   describe('Collection', function () {
 
     it('should accept a custom key field', function () {

@@ -2,10 +2,13 @@
 // NB arguments are passed to the anonymous function so I don't have
 // to declare them with var (to save characters) and they can be
 // minified
-(function (M, AP, doc, cbs, collRe, propRe, TUL, APBind) {
+(function (M, AP, doc, idx, collRe, propRe, TUL, APBind) {
   M = Math;
   AP = Array.prototype;
   doc = (typeof document === 'undefined' ? null : document);
+
+  // used by keygen()
+  idx = 0;
 
   // used by tpl()
   collRe = /\{\{([^\}]+?)\}\}[\s\S]+?\{\{\/\1\}\}/g;
@@ -206,8 +209,10 @@
     },
 
     // random key generator; generated keys are 8 random characters;
-    // if index is supplied, '-' + index is added to the key
+    // '-' + index is added to the key; if index is not supplied, a
+    // global index is used
     keygen: function (index) {
+      index = index || (idx += 1);
       var r;
 
       var str = 'xxxxxxxx'.replace(/x/g, function (c) {
@@ -215,7 +220,7 @@
         return r.toString(16);
       });
 
-      return (index ? str += '-' + index : str);
+      return str += '-' + index;
     },
 
     // browser-only HTTP request; NB this will not do cross-domain
