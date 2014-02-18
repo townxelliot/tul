@@ -14,7 +14,7 @@
   collRe = /\{\{([^\}]+?)\}\}[\s\S]+?\{\{\/\1\}\}/g;
   propRe = /\{([^\}]+)\}/g;
 
-  // get/set a property for model recursively;
+  // get/set a property for Model recursively;
   // if val is set, it sets the property and returns the previous
   // value; if val is not set, it returns the current value
   var accessProp = function (model, prop, val) {
@@ -272,11 +272,10 @@
     // object from the JSON
     // opts.cbParam: parameter name to append the jsonp callback parameter
     // to; defaults to "callback"
-    // opts.removeAfter: if true, the <script> element is removed
-    // after the callback has executed
     // returns the ID of the request, which can be used to remove
     // the script manually from the page if desired (each is given a
-    // "data-tul-jsonp-id" attribute set to this returned ID)
+    // "data-tul-jsonp-id" attribute set to this returned ID);
+    // NB <script> elements are inserted into the body of the page
     jsonp: function (opts) {
       var cbId = this.keygen();
 
@@ -294,7 +293,7 @@
 
                 (opts.cbParam || 'callback') +
 
-                '=_TUL_jsonp[\'' + cbId + '\']';
+                "=_TUL_jsonp['" + cbId + "']";
 
       var script = doc.createElement('script');
       script.src = url;
@@ -306,17 +305,12 @@
         // invoke the original callback
         opts.cb(obj);
 
-        // remove the script (we know it's in the head)
-        if (opts.removeAfter) {
-          doc.head.removeChild(script);
-        }
-
         // remove _this_ global callback
         delete window._TUL_jsonp[cbId];
       };
 
       // make the magic happen
-      doc.head.appendChild(script);
+      doc.body.appendChild(script);
 
       return cbId;
     },
