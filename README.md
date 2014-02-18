@@ -10,9 +10,8 @@ TUL works in a lot of the cases where I want it
 to (mainly very up to date Chrome/Crosswalk and Firefox/Firefox OS)
 and that's the only promise I can make.
 
-It also has a slightly idiosyncratic API. I seem
-to end up writing the same pieces of code over and over which rarely
-appear in other libraries, so I put that code in here.
+It also has a slightly idiosyncratic API. I seem to end up writing
+and using the same chunks of code over and over, so I put them in here.
 
 I will probably add/remove stuff to this as I think of it and change
 my mind.
