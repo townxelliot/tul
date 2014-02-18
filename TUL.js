@@ -2,10 +2,11 @@
 // NB arguments are passed to the anonymous function so I don't have
 // to declare them with var (to save characters) and they can be
 // minified
-(function (M, AP, doc, idx, collRe, propRe, TUL, APBind) {
+(function (M, AP, doc, win, idx, collRe, propRe, TUL, APBind) {
   M = Math;
   AP = Array.prototype;
-  doc = (typeof document === 'undefined' ? null : document);
+  doc = (typeof document == 'undefined' ? null : document);
+  win = (typeof window == 'undefined' ? global : window);
 
   // used by keygen()
   idx = 0;
@@ -277,12 +278,16 @@
     // "data-tul-jsonp-id" attribute set to this returned ID);
     // NB <script> elements are inserted into the body of the page
     jsonp: function (opts) {
+      if (!doc) {
+        return;
+      }
+
       var cbId = this.keygen();
 
       // used to store callbacks; these have to be on the global
       // scope, as we can't be certain that TUL will be available
       // from the context of other <script> elements
-      window._TUL_jsonp = window._TUL_jsonp || {};
+      win._TUL_jsonp = win._TUL_jsonp || {};
 
       var url = opts.url +
                  // if no question mark, add one
@@ -301,12 +306,12 @@
 
       // we make a uniquely-named callback function, globally visible,
       // which will be invoked with the object parsed from the response
-      window._TUL_jsonp[cbId] = function (obj) {
+      win._TUL_jsonp[cbId] = function (obj) {
         // invoke the original callback
         opts.cb(obj);
 
         // remove _this_ global callback
-        delete window._TUL_jsonp[cbId];
+        delete win._TUL_jsonp[cbId];
       };
 
       // make the magic happen
@@ -495,6 +500,6 @@
     define(TUL);
   }
   else {
-    window.TUL = TUL;
+    win.TUL = TUL;
   }
 })();
