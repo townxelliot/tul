@@ -55,7 +55,7 @@ if you use it for database keys which are written from multiple pages)
 *   TUL.chomp(): remove trailing character from a string (useful for
 making URLs)
 *   TUL.round(): round a number
-*   TUL.zpad(): zero pad a number
+*   TUL.zpad(): zero pad a number &lt; 10
 *   TUL.timefmt(): format seconds to "HH:MM:ss"
 *   TUL.Ev(): prototype which can be used to add on()/off()/fire() methods
 to an object (mix it into an object with TUL.ext())
