@@ -1,0 +1,511 @@
+/********************** my tiny utilities library **********************/
+// NB arguments are passed to the anonymous function so I don't have
+// to declare them with var (to save characters) and they can be
+// minified
+(function (M, AP, doc, cbs, collRe, propRe, TUL, APBind) {
+  M = Math;
+  AP = Array.prototype;
+  doc = (typeof document === 'undefined' ? null : document);
+
+  // used by tpl()
+  collRe = /\{\{([^\}]+?)\}\}[\s\S]+?\{\{\/\1\}\}/g;
+  propRe = /\{([^\}]+)\}/g;
+
+  // get/set a property for model recursively;
+  // if val is set, it sets the property and returns the previous
+  // value; if val is not set, it returns the current value
+  var accessProp = function (model, prop, val) {
+    var dotPos = prop.indexOf('.');
+    if (dotPos != -1) {
+      return accessProp(
+        model.get(prop.slice(0, dotPos)),
+        prop.slice(dotPos + 1),
+        val
+      );
+    }
+    else {
+      var curr = model.props[prop];
+
+      if (val) {
+        model.props[prop] = val;
+      }
+
+      return curr;
+    }
+  };
+
+  /*
+   * Models and collections
+   */
+  // collection which fires events when it's modified (add or remove);
+  // opts.keyfield: use keyfield of each item for the key
+  // OR
+  // TUL.keygen() is used
+  // opts.idx: if using TUL.keygen(), this provides the index to be
+  // added to each ID to keep them unique; each time a new object
+  // is added, this is incremented; NB this is stored with the
+  // Collection, so it can be deserialised from JSON and allow
+  // the Collection to retain its index
+  function Collection(opts) {
+    this._TUL_type = 'Collection';
+    this.idx = opts.idx || 0;
+    this.keyfield = opts.keyfield;
+    this.keygen = this.keyfield ?
+                  function (item) {
+                    return item[opts.keyfield];
+                  } :
+                  function () {
+                    return TUL.keygen(this.idx += 1);
+                  };
+
+    this.items = opts.items || {};
+    TUL.ext(this, TUL.Ev);
+  }
+
+  Collection.prototype = {
+    // add a new item to the collection, optionally with a key;
+    // if no key is specified, one is generated using keygen()
+    add: function (item, k) {
+      k = k || this.keygen(item);
+      this.items[k] = item;
+      this.fire('add', {collection: this, key: k, item: item});
+    },
+
+    // remove an item by key
+    remove: function (k) {
+      var item = this.items[k];
+      delete this.items[k];
+      this.fire('remove', {collection: this, key: k, item: item});
+    },
+
+    // iterate items in the collection;
+    // pass a function fn with signature fn(item, key)
+    each: function (fn) {
+      TUL.each(this.items, fn);
+    },
+
+    // return the items as an array
+    asArray: function () {
+      return TUL.map(this.items, function (item) {
+        return item;
+      });
+    },
+
+    // find an item by function;
+    // fn has signature fn(value, key, array)
+    find: function (fn) {
+      return TUL.find(this.items, fn);
+    },
+
+    // get an item by key
+    get: function (k) {
+      return this.items[k];
+    }
+  };
+
+  // model which fires "change" events when properties are changed
+  function Model(props) {
+    this._TUL_type = 'Model';
+    this.props = props;
+    TUL.ext(this, TUL.Ev);
+  }
+
+  Model.prototype = {
+    // recursively set a property; if prop contains '.', will recurse
+    // down into any embedded models to find the property to change
+    set: function (prop, val) {
+      var oldValue = accessProp(this, prop, val);
+      this.fire('change', {model: this, prop: prop, from: oldValue, to: val});
+    },
+
+    // get value for property prop from this model; if the value is
+    // itself a model, and prop contains a '.', recursively descend
+    // into the model value;
+    // val sets the context for the get, but would usually be omitted
+    get: function (prop, val) {
+      return accessProp(this, prop);
+    }
+  };
+
+  // this is the public API for TUL, and shouldn't touch global scope
+  TUL = {
+    Collection: function (opts) {
+      return new Collection(opts || {});
+    },
+
+    Model: function (props) {
+      return new Model(props || {});
+    },
+
+    // querySelectorAll wrapper; returns an array rather than a node list,
+    // for easier handling; or if sel returns a single element, just
+    // returns that (not an array);
+    // the caller is responsible for figuring out whether they have
+    // an array or a single object to deal with
+    $: function (sel, ctx) {
+      var nodes = [];
+
+      if (doc) {
+        var nodeList = doc.querySelectorAll(sel, ctx || doc);
+
+        if (nodeList.length == 1) {
+          nodes = nodeList.item(0);
+        }
+        else {
+          for (var i = 0; i < nodeList.length; i++) {
+            nodes.push(nodeList.item(i));
+          }
+        }
+      }
+
+      return nodes;
+    },
+
+    /*
+     * Array methods; these are added to all arrays as shims
+     * if the corresponding Array methods don't exist
+     */
+    // iterate the elements of the array arr;
+    // fn receives (value, index, arr) for each Array element;
+    // thisObj: the object to use as "this" when calling fn(); defaults
+    // to undefined
+    forEach: function (arr, fn, thisObj) {
+      for (var i = 0; i < arr.length; i++) {
+        fn.call(thisObj, arr[i], i, arr);
+      }
+    },
+
+    // return first element of Array or Object for which test returns true,
+    // or null if none do;
+    // test() is passed (value, key, objOrArray) for each key;
+    // NB we don't use each(), for efficiency's sake: we can break the loop
+    // as soon as we find a value which passes test();
+    // thisObj: the object to use as "this" when calling test(); defaults
+    // to undefined
+    find: function (obj, test, thisObj) {
+      var selected = undefined;
+
+      for (var k in obj) {
+        if (test.call(thisObj, obj[k], k, obj)) {
+          selected = obj[k];
+          break;
+        }
+      }
+
+      return selected;
+    },
+
+    // return a new array generated by passing each item of arr through
+    // fn; fn should return an item to be added to the output array
+    map: function (arr, fn) {
+      var out = [];
+      this.each(arr, function (v) {
+        out.push(fn(v));
+      });
+      return out;
+    },
+
+    // random key generator; generated keys are 8 random characters;
+    // if index is supplied, '-' + index is added to the key
+    keygen: function (index) {
+      var r;
+
+      var str = 'xxxxxxxx'.replace(/x/g, function (c) {
+        r = M.random() * 16 | 0;
+        return r.toString(16);
+      });
+
+      return (index ? str += '-' + index : str);
+    },
+
+    // browser-only HTTP request; NB this will not do cross-domain
+    // requests
+    // opts.url (REQUIRED)
+    // opts.cb (REQUIRED): handler for response; signature
+    // cb(err, responseText)
+    // opts.isJSON: if true, automatically applies JSON.parse()
+    // to the response text
+    // opts.headers: object mapping header names to values, e.g.
+    // {'Content-Type': 'application/json'}
+    // opts.method (default 'GET')
+    // opts.body: POST body
+    // opts.r: http request implementation; if not set, defaults
+    // to XMLHttpRequest
+    // partly based on http://microajax.googlecode.com/svn/trunk/microajax.js
+    // (New BSD licence)
+    req: function (opts) {
+      opts = opts || {};
+
+      var r = opts.r || new XMLHttpRequest();
+      r.sh = r.setRequestHeader.bind(r);
+
+      // now make the request
+      r.onreadystatechange = function () {
+        if (r.readyState === 4 && r.status < 400) {
+          var resp = r.responseText;
+
+          if (opts.isJSON) {
+            resp = JSON.parse(resp);
+          }
+
+          opts.cb(null, resp);
+        }
+        else if (r.status >= 400) {
+          opts.cb(new Error('failed: ' + opts.url + '; status=' + r.status));
+        }
+      };
+
+      // true => make async request
+      r.open(opts.method, opts.url, true);
+
+      opts.headers = opts.headers || {};
+      this.each(opts.headers, function (value, key) {
+        r.sh(key, value);
+      });
+
+      if (opts.body) {
+        r.sh('X-Requested-With', 'XMLHttpRequest');
+      }
+
+      r.send(opts.body);
+    },
+
+    // send a jsonp request (useful for cross-domain requests) by
+    // inserting a <script> into the head of the page;
+    // opts.url (REQUIRED)
+    // opts.cb (REQUIRED): callback which will receive the parsed
+    // object from the JSON
+    // opts.cbParam: parameter name to append the jsonp callback parameter
+    // to; defaults to "callback"
+    // opts.removeAfter: if true, the <script> element is removed
+    // after the callback has executed
+    // returns the ID of the request, which can be used to remove
+    // the script manually from the page if desired (each is given a
+    // "data-tul-jsonp-id" attribute set to this returned ID)
+    jsonp: function (opts) {
+      var cbId = this.keygen();
+
+      // used to store callbacks; these have to be on the global
+      // scope, as we can't be certain that TUL will be available
+      // from the context of other <script> elements
+      window._TUL_jsonp = window._TUL_jsonp || {};
+
+      var url = opts.url +
+                 // if no question mark, add one
+                (/\?/.test(opts.url) ? '' : '?') +
+
+                // if at least one character in querystring, add '&'
+                (/\?.+/.test(opts.url) ? '&' : '') +
+
+                (opts.cbParam || 'callback') +
+
+                '=_TUL_jsonp[\'' + cbId + '\']';
+
+      var script = doc.createElement('script');
+      script.src = url;
+      script.setAttribute('data-tul-jsonp-id', cbId);
+
+      // we make a uniquely-named callback function, globally visible,
+      // which will be invoked with the object parsed from the response
+      window._TUL_jsonp[cbId] = function (obj) {
+        // invoke the original callback
+        opts.cb(obj);
+
+        // remove the script (we know it's in the head)
+        if (opts.removeAfter) {
+          doc.head.removeChild(script);
+        }
+
+        // remove _this_ global callback
+        delete window._TUL_jsonp[cbId];
+      };
+
+      // make the magic happen
+      doc.head.appendChild(script);
+
+      return cbId;
+    },
+
+    /**
+     * MicroEvent - make any js object an event emitter (server or browser)
+     * modified from https://github.com/jeromeetienne/microevent.js/blob/master/microevent.js
+     * (MIT licence);
+     * extend an object with EV to add event functions on(), off(), fire(), e.g.
+     *   var eventEnabled = ext({a: 1}, EV);
+     */
+    Ev: {
+      on: function (event, fn) {
+        this.evts = this.evts || {};
+        this.evts[event] = this.evts[event] || [];
+        this.evts[event].push(fn);
+      },
+      off: function (event, fn) {
+        this.evts = this.evts || {};
+        if (event in this.evts) {
+          this.evts[event].splice(this.evts[event].indexOf(fn), 1);
+        }
+      },
+      fire: function (event /* , args... */) {
+        this.evts = this.evts || {};
+        if (event in this.evts) {
+          for (var i = 0; i < this.evts[event].length; i++){
+            this.evts[event][i].apply(this, AP.slice.call(arguments, 1));
+          }
+        }
+      }
+    },
+
+    /*
+     * Object property iterator; protects the 'prototype' property from
+     * being treated as iterable;
+     * fn() is invoked with (value, key) for each object property.
+     */
+    each: function (obj, fn) {
+      for (var k in obj) {
+        if (k !== 'prototype') {
+          fn(obj[k], k);
+        }
+      }
+    },
+
+    /*
+     * Extend an object;
+     * arguments 1+ are objects to extend obj with;
+     * if the objects you're extending with have the same property names,
+     * the "rightmost" one ends up setting the value.
+     */
+    ext: function (obj) {
+      var self = this;
+      AP.slice.call(arguments, 1).forEach(function (o) {
+        self.each(o, function (v, k) {
+          obj[k] = (typeof v === 'function' ? v.bind(obj) : v);
+        });
+      });
+      return obj;
+    },
+
+    /*
+     * Very, very simple, unforgiving (but small) templating.
+     */
+    // this needs AP.forEach on older browsers (see above)
+    //
+    // use a template string like:
+    //
+    // "{{:x}}<p>{name} likes: <ul>{{likes}}<li>{.}</li>{{/likes}}</ul></p>{{/:x}}"
+    //
+    // and data like:
+    //
+    // [{"name":"Pete","likes":["potato","onion","cake"]},
+    //  {"name":"Frank","likes":["fish","carrots"]}]
+    //
+    // {prop} means interpolate the value of property "prop";
+    // {{prop}}...{{/prop}} means iterate over the property "prop",
+    // applying the template between the tags for each item;
+    // ":x" means use the current data (this is an "anonymous" iterator);
+    // a string inside {} or {{}} means use that property from the data;
+    // note that the ":x" identifier for an anonymous iterator should be
+    // unique across the template: this function can't cope with a
+    // structure like "{{:x}}{{:x}}{.}{{/:x}}{{/:x}}" for example, as
+    // it's not sophisticated enough to comprehend complex scoping
+    tpl: function (str, data) {
+      var self = this;
+
+      // first replace any {{x}}...{{/x}} chunks
+      str = str.replace(collRe, function (sub, prop) {
+        var collection = data[prop] || data;
+
+        // slice the substring sub up to the next occurrence
+        // of prop, so we can get the subtemplate; we append
+        // any remaining string once we've recursively populated the
+        // subtemplate string for each item in collection
+        var endTag = '{{/' + prop + '}}';
+        var endTagPos = sub.indexOf(endTag);
+        var strLeft = sub.slice(endTagPos, endTag.length);
+
+        // endTag is 1 character longer than the start tag
+        var subtemplate = sub.slice(endTag.length - 1, endTagPos);
+
+        var rep = '';
+
+        collection.forEach(function (item) {
+           rep += self.tpl(subtemplate, item);
+        });
+
+        return rep + strLeft;
+      });
+
+      // now replace simple properties inside the chunk
+      return str.replace(propRe, function (sub, prop) {
+        return data[prop] || data;
+      });
+    },
+
+    /*
+     * Strings
+     */
+    // remove sub from the end of str
+    chomp: function (str, sub) {
+      return str.replace(new RegExp(sub + '$'), '');
+    },
+
+    /*
+     * Maths and time
+     */
+    // round number "num" to "places" decimal places
+    round: function (num, places) {
+      var multiplier = M.pow(10, places);
+      return M.round(num * multiplier) / multiplier;
+    },
+
+    // zero pad a number if it's less than 10
+    zpad: function (val) {
+      return (val < 10 ? '0' + val : '' + val);
+    },
+
+    // format a duration in seconds into HH:MM:ss format;
+    // useful for formatting durations for audio files etc.;
+    // this needs zpad (see above)
+    timefmt: function (sec) {
+      var z = this.zpad;
+
+      var hours = M.floor(sec / 3600);
+      sec = sec - (hours * 3600);
+
+      var minutes = M.floor(sec / 60);
+      sec = sec - (minutes * 60);
+
+      var seconds = M.floor(sec);
+
+      return z(hours) + ':' +
+             z(minutes) + ':' +
+             z(seconds);
+    }
+  };
+
+  /*
+   * Extra array methods on the Array.prototype (so all arrays get them)
+   */
+  APBind = function (fnToBind) {
+    AP[fnToBind] = AP[fnToBind] || function () {
+      var args = AP.slice.call(arguments, 0);
+      args.unshift(this);
+      return TUL[fnToBind].apply(this, args);
+    };
+  };
+
+  // shims for Array.prototype
+  APBind('forEach');
+  APBind('find');
+  APBind('map');
+
+  // export TUL object
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = TUL;
+  }
+  else if (typeof define !== 'undefined' && define.amd) {
+    define(TUL);
+  }
+  else {
+    window.TUL = TUL;
+  }
+})();

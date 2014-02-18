@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<title>jsonp example</title>
+</head>
+<body>
+<p>Example of using jsonp to fetch the time and date from
+<a href="http://www.jsontest.com/">jsontest</a>.</p>
+
+<div id="result">
+</div>
+
+<script src="../TUL.js"></script>
+<script>
+TUL.jsonp({
+  url: 'http://date.jsontest.com/',
+
+  cb: function (json) {
+    var template = '<p>Time: {time}</p><p>Date: {date}</p>';
+    TUL.$('#result').innerHTML = TUL.tpl(template, json);
+  },
+
+  // remove the <script> which loaded and executed the JSON after
+  // the callback has been invoked
+  removeAfter: true
+});
+</script>
+</body>
+</html>

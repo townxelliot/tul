@@ -1,0 +1,5 @@
+[
+  {"name": "Fred", "age": 22, "likes": ["carrots", "apples"]},
+  {"name": "Pam", "age": 42, "likes": ["oranges", "pears"]},
+  {"name": "Pat", "age": 42, "likes": ["kiwis", "kumquats"]}
+]

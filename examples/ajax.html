@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<title>ajax example</title>
+</head>
+<body>
+<p>Example of using ajax() to fetch some JSON, find() to select
+an element from it, then tpl() to present it.</p>
+
+<p>The template is stored in a &lt;template&gt; element inside the
+div which will display the person.</p>
+
+<div id="person">
+  <template id="person-tpl">
+    <p>{name} is {age} and likes:</p>
+    <ul>
+    {{likes}}
+      <li>{.}</li>
+    {{/likes}}
+    </ul>
+  </template>
+</div>
+
+<script src="../build/TUL.min.js"></script>
+<script>
+TUL.req({
+  url: './people.json',
+
+  isJSON: true,
+
+  cb: function (err, people) {
+    if (err) {
+      console.error(err);
+    }
+    else {
+      // get the first person who is called "Pam"
+      var person = people.find(function (candidate) {
+        return candidate.name === "Pam";
+      });
+
+      var template = document.querySelector('#person-tpl').innerHTML;
+      var html = TUL.tpl(template, person);
+      TUL.$('#person').innerHTML = html;
+    }
+  }
+});
+</script>
+</body>
+</html>

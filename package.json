@@ -1,0 +1,20 @@
+{
+  "name": "tul",
+  "version": "0.0.0",
+  "description": "Tiny Utility Library",
+  "main": "TUL.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-mochaccino": "~0.1.7",
+    "chai": "~1.9.0",
+    "grunt-contrib-uglify": "~0.3.2"
+  }
+}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<title>dom example</title>
+</head>
+<body>
+<p>Example of using $() to find elements.</p>
+
+<ul>
+  <li>Pam</li>
+  <li>Bob</li>
+  <li>Rick</li>
+</ul>
+
+<div id="result"></div>
+
+<script src="../build/TUL.min.js"></script>
+<script>
+// query scoped to document, returning one element
+var list = TUL.$('ul');
+
+// query scoped to the <ul>
+var items = TUL.$('li', list);
+
+// set HTML of single element
+TUL.$('#result').innerHTML = 'There are ' + items.length + ' &lt;li&gt; elements';
+</script>
+</body>
+</html>
