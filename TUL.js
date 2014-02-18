@@ -325,7 +325,7 @@
      * modified from https://github.com/jeromeetienne/microevent.js/blob/master/microevent.js
      * (MIT licence);
      * extend an object with EV to add event functions on(), off(), fire(), e.g.
-     *   var eventEnabled = ext({a: 1}, EV);
+     *   var eventEnabled = TUL.ext({a: 1}, Ev);
      */
     Ev: {
       on: function (event, fn) {
