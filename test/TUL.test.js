@@ -1,4 +1,6 @@
-require('chai').should();
+var chai = require('chai');
+chai.should();
+var expect = chai.expect;
 
 var TUL = require('../TUL');
 
@@ -173,6 +175,25 @@ describe('TUL', function () {
     it('should have gettable properties', function () {
       var name = TUL.Model({first: 'Ricky', last: 'Pinstripe'});
       name.get('last').should.eql('Pinstripe');
+    });
+
+    it('should have properties which can be set to falsy values', function () {
+      var m = TUL.Model();
+
+      m.set('progress', 0);
+      m.get('progress').should.equal(0);
+
+      m.set('progress', false);
+      m.get('progress').should.equal(false);
+
+      m.set('progress', '');
+      m.get('progress').should.equal('');
+
+      m.set('progress', null);
+      expect(m.get('progress')).to.equal(null);
+
+      m.set('progress', undefined);
+      expect(m.get('progress')).to.equal(undefined);
     });
 
     it('should recusively set properties', function (done) {

@@ -18,17 +18,19 @@
   // get/set a property for Model recursively;
   // if val is set, it sets the property and returns the previous
   // value; if val is not set, it returns the current value
-  var accessProp = function (model, prop, val) {
+  var accessProp = function (model, prop, val, valSet) {
+    valSet = valSet || (arguments.length == 2 ? false : true);
+
     var dotPos = prop.indexOf('.');
     if (dotPos != -1) {
       var first = prop.slice(0, dotPos);
       var rest = prop.slice(dotPos + 1);
 
       if (model && typeof model.get === 'function') {
-        return accessProp(model.get(first), rest, val);
+        return accessProp(model.get(first), rest, val, valSet);
       }
       else {
-        return accessProp(model[first], rest, val);
+        return accessProp(model[first], rest, val, valSet);
       }
     }
     else {
@@ -41,14 +43,14 @@
       if (typeof model.props == 'object') {
         curr = model.props[prop];
 
-        if (val) {
+        if (valSet) {
           model.props[prop] = val;
         }
       }
       else {
         curr = model[prop];
 
-        if (val) {
+        if (valSet) {
           model[prop] = val;
         }
       }
@@ -145,7 +147,7 @@
     // itself a model, and prop contains a '.', recursively descend
     // into the model value;
     // val sets the context for the get, but would usually be omitted
-    get: function (prop, val) {
+    get: function (prop) {
       return accessProp(this, prop);
     }
   };
