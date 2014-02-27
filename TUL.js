@@ -259,6 +259,8 @@
     // opts.headers: object mapping header names to values, e.g.
     // {'Content-Type': 'application/json'}
     // opts.method (default 'GET')
+    // opts.timeout (default undefined): if set, throw an error
+    // after opts.timeout milliseconds
     // opts.body: POST body
     // r: http request implementation; if not set, defaults
     // to new XMLHttpRequest
@@ -268,6 +270,13 @@
       opts = opts || {};
 
       r = r || new XMLHttpRequest();
+
+      if (opts.timeout) {
+        r.timeout = opts.timeout;
+        r.ontimeout = function () {
+          opts.cb(new Error('request timed out after ' + opts.timeout + 'ms'));
+        };
+      }
 
       // now make the request
       r.onreadystatechange = function () {
