@@ -75,7 +75,7 @@
     this.keyfield = opts.keyfield;
     this.keygen = this.keyfield ?
                   function (item) {
-                    return item[opts.keyfield];
+                    return accessProp(item, opts.keyfield);
                   } :
                   function () {
                     return TUL.keygen(this.idx += 1);
