@@ -388,6 +388,14 @@ describe('TUL', function () {
       var actual = TUL.tpl(template, c);
     });
 
+    it('should interpolate falsy values', function () {
+      var model = {a: 0, b: false, c: null};
+      var template = '{a} {b} {c}';
+      var expected = '0 false null';
+      var actual = TUL.tpl(template, model);
+      actual.should.equal(expected);
+    });
+
   });
 
 });
