@@ -17,9 +17,12 @@
 
   // get/set a property for Model recursively;
   // if val is set, it sets the property and returns the previous
-  // value; if val is not set, it returns the current value
-  var accessProp = function (model, prop, val, valSet) {
-    valSet = valSet || (arguments.length == 2 ? false : true);
+  // value; if val is not set, it returns the current value;
+  // vs: set to true if a value is set (used for the recursive
+  // calls to prevent a value being overwritten with undefined if val
+  // was never specified)
+  var accessProp = function (model, prop, val, vs) {
+    vs = vs || (arguments.length == 2 ? false : true);
 
     var dotPos = prop.indexOf('.');
     if (dotPos != -1) {
@@ -27,10 +30,10 @@
       var rest = prop.slice(dotPos + 1);
 
       if (model && typeof model.get === 'function') {
-        return accessProp(model.get(first), rest, val, valSet);
+        return accessProp(model.get(first), rest, val, vs);
       }
       else {
-        return accessProp(model[first], rest, val, valSet);
+        return accessProp(model[first], rest, val, vs);
       }
     }
     else {
@@ -43,14 +46,14 @@
       if (typeof model.props == 'object') {
         curr = model.props[prop];
 
-        if (valSet) {
+        if (vs) {
           model.props[prop] = val;
         }
       }
       else {
         curr = model[prop];
 
-        if (valSet) {
+        if (vs) {
           model[prop] = val;
         }
       }
