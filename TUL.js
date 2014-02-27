@@ -464,6 +464,10 @@
      */
     // round number "num" to "places" decimal places
     round: function (num, places) {
+      if (!num) {
+        return 0;
+      }
+
       var multiplier = M.pow(10, places);
       return M.round(num * multiplier) / multiplier;
     },
