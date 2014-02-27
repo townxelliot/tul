@@ -75,7 +75,6 @@
   // Collection, so it can be deserialised from JSON and allow
   // the Collection to retain its index
   function Collection(opts) {
-    this._TUL_type = 'Collection';
     this.idx = opts.idx || 0;
     this.keyfield = opts.keyfield;
     this.keygen = this.keyfield ?
@@ -133,7 +132,6 @@
 
   // model which fires "change" events when properties are changed
   function Model(props) {
-    this._TUL_type = 'Model';
     this.props = props;
     TUL.ext(this, TUL.Ev);
   }
