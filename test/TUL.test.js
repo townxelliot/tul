@@ -31,7 +31,7 @@ describe('TUL', function () {
       var expected = ['/foo', '/bar'];
       var actual = [];
 
-      c.each(function (item, key) {
+      c.forEach(function (item, key) {
         actual.push(key);
       });
 
@@ -116,7 +116,7 @@ describe('TUL', function () {
       var expected = 'FredBarneyWilma';
 
       var actual = '';
-      c.each(function (item) {
+      c.forEach(function (item) {
         actual += item.name;
       });
 
@@ -211,23 +211,19 @@ describe('TUL', function () {
 
   });
 
-  describe('each()', function () {
+  describe('forEach()', function () {
 
     it('should iterate properties of an object', function () {
       var obj = {a: 1, b: 2, c: 3};
       var expected = 6;
       var actual = 0;
 
-      TUL.each(obj, function (val, key) {
+      TUL.forEach(obj, function (val, key) {
         actual += val;
       });
 
       actual.should.equal(expected);
     });
-
-  });
-
-  describe('forEach()', function () {
 
     it('should apply a function to each item of an array', function () {
       var arr = [1, 2, 3, 4, 5];
@@ -241,7 +237,7 @@ describe('TUL', function () {
       actual.should.eql(expected);
     });
 
-    it('should apply accept a custom "this"', function () {
+    it('should accept a custom "this"', function () {
       var thisObj = {
         square: function (num, idx) {
           return '' + idx + ':' + (num * num) + ',';
@@ -344,6 +340,31 @@ describe('TUL', function () {
       var expected = 'Fred is 22 Pete is 23 22 23 ';
       var actual = TUL.tpl(template, data);
       actual.should.eql(expected);
+    });
+
+    it('should cope with nested property lookups on vanilla objects', function () {
+      var template = '{{.}}{meta.title} {{/.}}';
+      var data = [{meta: {title: 'foo'}}, {meta: {title: 'bar'}}];
+      var expected = 'foo bar ';
+      var actual = TUL.tpl(template, data);
+      actual.should.equal(expected);
+    });
+
+    it('should work with models and collections', function () {
+      var c = TUL.Collection();
+
+      var name1 = TUL.Model({first: 'Ricky', last: 'Pinstripe'});
+      var user1 = TUL.Model({name: name2});
+
+      var name2 = TUL.Model({first: 'Herbert', last: 'Anderson'});
+      var user2 = TUL.Model({name: name2});
+
+      c.add(user1);
+      c.add(user2);
+
+      var template = '{{:x}}{name.first} {name.last}<br>{{{/:x}}';
+      var expected = 'Ricky Pinstripe<br>Herbert Anderson<br>';
+      var actual = TUL.tpl(template, c);
     });
 
   });

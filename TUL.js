@@ -102,9 +102,9 @@
     },
 
     // iterate items in the collection;
-    // pass a function fn with signature fn(item, key)
-    each: function (fn) {
-      TUL.each(this.items, fn);
+    // pass a function fn with signature fn(item, key, arr)
+    forEach: function (fn) {
+      TUL.forEach(this.items, fn);
     },
 
     // return the items as an array
@@ -193,8 +193,17 @@
     // thisObj: the object to use as "this" when calling fn(); defaults
     // to undefined
     forEach: function (arr, fn, thisObj) {
-      for (var i = 0; i < arr.length; i++) {
-        fn.call(thisObj, arr[i], i, arr);
+      if (arr.length) {
+        for (var i = 0; i < arr.length; i++) {
+          fn.call(thisObj, arr[i], i, arr);
+        }
+      }
+      else {
+        for (var k in arr) {
+          if (k != 'prototype') {
+            fn.call(thisObj, arr[k], k, arr);
+          }
+        }
       }
     },
 
@@ -222,7 +231,7 @@
     // fn; fn should return an item to be added to the output array
     map: function (arr, fn) {
       var out = [];
-      this.each(arr, function (v) {
+      this.forEach(arr, function (v) {
         out.push(fn(v));
       });
       return out;
@@ -277,7 +286,7 @@
       r.open(opts.method, opts.url, true);
 
       opts.headers = opts.headers || {};
-      this.each(opts.headers, function (value, key) {
+      this.forEach(opts.headers, function (value, key) {
         r.setRequestHeader(key, value);
       });
 
@@ -369,19 +378,6 @@
     },
 
     /*
-     * Object property iterator; protects the 'prototype' property from
-     * being treated as iterable;
-     * fn() is invoked with (value, key) for each object property.
-     */
-    each: function (obj, fn) {
-      for (var k in obj) {
-        if (k !== 'prototype') {
-          fn(obj[k], k);
-        }
-      }
-    },
-
-    /*
      * Extend an object;
      * arguments 1+ are objects to extend obj with;
      * if the objects you're extending with have the same property names,
@@ -390,7 +386,7 @@
     ext: function (obj) {
       var self = this;
       A.slice.call(arguments, 1).forEach(function (o) {
-        self.each(o, function (v, k) {
+        self.forEach(o, function (v, k) {
           obj[k] = (typeof v === 'function' ? v.bind(obj) : v);
         });
       });
