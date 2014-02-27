@@ -26,14 +26,14 @@
 
     var dotPos = prop.indexOf('.');
     if (dotPos != -1) {
-      var first = prop.slice(0, dotPos);
+      var head = prop.slice(0, dotPos);
       var rest = prop.slice(dotPos + 1);
 
-      if (model && typeof model.get === 'function') {
-        return accessProp(model.get(first), rest, val, vs);
+      if (typeof model.get == 'function') {
+        return accessProp(model.get(head), rest, val, vs);
       }
       else {
-        return accessProp(model[first], rest, val, vs);
+        return accessProp(model[head], rest, val, vs);
       }
     }
     else {
