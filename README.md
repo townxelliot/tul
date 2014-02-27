@@ -1,6 +1,6 @@
 # TUL - Tiny Utilities Library
 
-"Tiny" === around 4K when minified
+"Tiny" === around 4.2K when minified
 
 If you want something well tested which is guaranteed to work all
 the time on all browsers, this isn't it - try lodash and/or jQuery
