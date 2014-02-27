@@ -21,17 +21,36 @@
   var accessProp = function (model, prop, val) {
     var dotPos = prop.indexOf('.');
     if (dotPos != -1) {
-      return accessProp(
-        model.get(prop.slice(0, dotPos)),
-        prop.slice(dotPos + 1),
-        val
-      );
+      var first = prop.slice(0, dotPos);
+      var rest = prop.slice(dotPos + 1);
+
+      if (model && typeof model.get === 'function') {
+        return accessProp(model.get(first), rest, val);
+      }
+      else {
+        return accessProp(model[first], rest, val);
+      }
     }
     else {
-      var curr = model.props[prop];
+      var curr;
 
-      if (val) {
-        model.props[prop] = val;
+      if (!model) {
+        return curr;
+      }
+
+      if (typeof model.props == 'object') {
+        curr = model.props[prop];
+
+        if (val) {
+          model.props[prop] = val;
+        }
+      }
+      else {
+        curr = model[prop];
+
+        if (val) {
+          model[prop] = val;
+        }
       }
 
       return curr;
@@ -406,7 +425,7 @@
 
       // first replace any {{x}}...{{/x}} chunks
       str = str.replace(collRe, function (sub, prop) {
-        var collection = data[prop] || data;
+        var collection = accessProp(data, prop) || data;
 
         // slice the substring sub up to the next occurrence
         // of prop, so we can get the subtemplate; we append
@@ -430,7 +449,7 @@
 
       // now replace simple properties inside the chunk
       return str.replace(propRe, function (sub, prop) {
-        return data[prop] || data;
+        return accessProp(data, prop) || data;
       });
     },
 
