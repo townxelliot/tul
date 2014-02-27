@@ -447,7 +447,13 @@
 
       // now replace simple properties inside the chunk
       return str.replace(propRe, function (sub, prop) {
-        return accessProp(data, prop) || data;
+        var val = accessProp(data, prop);
+
+        if (typeof val == 'undefined') {
+          val = data;
+        }
+
+        return val;
       });
     },
 
