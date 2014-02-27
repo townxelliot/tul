@@ -497,7 +497,7 @@
     module.exports = TUL;
   }
   else if (typeof define !== 'undefined' && define.amd) {
-    define(TUL);
+    define('TUL', TUL);
   }
   else {
     win.TUL = TUL;
