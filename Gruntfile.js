@@ -22,7 +22,7 @@ module.exports = function (grunt) {
         commit: true,
         push: true,
 
-        bump: true,
+        bump: false,
         tag: true,
         pushTags: true,
         npm: true,
