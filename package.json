@@ -1,15 +1,15 @@
 {
-  "name": "tul",
-  "version": "0.0.0",
-  "description": "Tiny Utility Library",
+  "name": "TUL",
   "main": "TUL.js",
+  "version": "0.0.1",
+  "description": "Tiny Utilities Library",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/grunt-cli/bin/grunt test"
   },
-  "author": "",
+  "author": "Elliot Smith <elliot@townx.org>",
   "license": "MIT",
   "devDependencies": {
     "grunt": "~0.4.2",

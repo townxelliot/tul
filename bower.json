@@ -1,22 +1,24 @@
 {
   "name": "TUL",
   "main": "TUL.js",
-  "version": "0.0.0",
+  "version": "0.0.1",
+  "description": "Tiny Utilities Library",
   "homepage": "https://github.com/townxelliot/tul",
   "authors": [
-    "Elliot Smith <elliot.smith@intel.com>"
+    "Elliot Smith <elliot@townx.org>"
   ],
-  "description": "Tiny Utilities Library",
   "license": "MIT",
-  "private": true,
   "ignore": [
     "**/.*",
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "examples",
+    "Gruntfile.js",
+    "package.json",
+    "README.md"
   ],
-  "dependencies": {
+  "devDependencies": {
     "requirejs": "~2.1.11"
   }
 }
