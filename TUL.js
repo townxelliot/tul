@@ -295,14 +295,13 @@
       };
 
       // true => make async request
-      r.open(opts.method, opts.url, true);
+      r.open(opts.method || 'GET', opts.url, true);
 
       opts.headers = opts.headers || {};
       this.forEach(opts.headers, function (value, key) {
         r.setRequestHeader(key, value);
       });
 
-      r.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
       r.send(opts.body);
     },
 
