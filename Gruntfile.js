@@ -90,11 +90,20 @@ module.exports = function (grunt) {
       }
     )
     .then(
-      // push commit and tag to git repo
+      // push commit to git repo
       function () {
         return run(
-          'git push --all --tags',
-          'pushing commit and tag to repo'
+          'git push',
+          'pushing commit to repo'
+        );
+      }
+    )
+    .then(
+      // push tag to git repo
+      function () {
+        return run(
+          'git push --tags',
+          'pushing tag to repo'
         );
       }
     )
