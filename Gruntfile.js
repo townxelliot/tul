@@ -87,12 +87,22 @@ module.exports = function (grunt) {
           'git tag ' + pkg.version + ' -m "Release ' + pkg.version + '"',
           'tagging version ' + pkg.version
       }
-    );
-
-    // push commit and tag to git repo
-
-    // publish to npm repo
-
-    done();
+    )
+    .then(
+      // push commit and tag to git repo
+      function () {
+        return run(
+          'git push --all',
+          'pushing commit and tag to repo'
+        );
+      }
+    )
+    .then(
+      // publish to npm repo
+      function () {
+        return Q();
+      }
+    )
+    .done(done, done);
   });
 };
