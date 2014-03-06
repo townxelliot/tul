@@ -93,7 +93,7 @@ module.exports = function (grunt) {
       // push commit and tag to git repo
       function () {
         return run(
-          'git push --all',
+          'git push --all --tags',
           'pushing commit and tag to repo'
         );
       }
@@ -101,7 +101,11 @@ module.exports = function (grunt) {
     .then(
       // publish to npm repo
       function () {
-        return Q();
+        return run(
+          'npm publish .',
+          'publishing to npm',
+          /npm ERR\! not ok/
+        );
       }
     )
     .done(done, done);
