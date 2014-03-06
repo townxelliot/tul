@@ -16,7 +16,7 @@ module.exports = function (grunt) {
       }
     },
 
-    release: {}
+    release_simple: {}
   });
 
   grunt.registerTask('min', ['uglify']);
