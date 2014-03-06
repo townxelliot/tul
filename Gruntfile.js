@@ -86,6 +86,7 @@ module.exports = function (grunt) {
         return run(
           'git tag ' + pkg.version + ' -m "Release ' + pkg.version + '"',
           'tagging version ' + pkg.version
+        );
       }
     )
     .then(
