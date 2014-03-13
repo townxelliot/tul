@@ -234,6 +234,18 @@ describe('TUL', function () {
 
   describe('forEach()', function () {
 
+    it('should not treat an array of length 0 as an object', function () {
+      var arr = [];
+      var callCount = 0;
+      var fn = function () {
+        callCount++;
+      };
+
+      TUL.forEach(arr, fn);
+
+      callCount.should.equal(0);
+    });
+
     it('should iterate properties of an object', function () {
       var obj = {a: 1, b: 2, c: 3};
       var expected = 6;
