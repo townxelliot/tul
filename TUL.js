@@ -94,7 +94,6 @@
     // if no key is specified, one is generated using keygen()
     add: function (item, k) {
       k = k || this.keygen(item);
-      item._key = k;
       this.items[k] = item;
       this.fire('add', {collection: this, key: k, item: item});
     },
