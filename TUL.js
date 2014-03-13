@@ -196,6 +196,10 @@
     // thisObj: the object to use as "this" when calling fn(); defaults
     // to undefined
     forEach: function (arr, fn, thisObj) {
+      if (!arr) {
+        return;
+      }
+
       if (arr.hasOwnProperty('length')) {
         for (var i = 0; i < arr.length; i++) {
           fn.call(thisObj, arr[i], i, arr);
