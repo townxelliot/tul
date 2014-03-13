@@ -326,6 +326,16 @@ describe('TUL', function () {
 
   });
 
+  describe('norm()', function () {
+
+    it('should normalise unusual characters, non-word characters and whitespace', function () {
+      var expected = '35355-eeiilno-aace-ostuunczz';
+      var actual = TUL.norm('"&3535$£5$ ëêìîłńõ   £$£$"!!!!!") ąàćę(_-++++==     __=-   øśțùúñçżź-');
+      actual.should.equal(expected);
+    });
+
+  });
+
   describe('tpl()', function () {
 
     it('should cope with named iterators', function () {

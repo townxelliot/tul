@@ -478,6 +478,25 @@
       return str.replace(new RegExp(sub + '$'), '');
     },
 
+    // normalise a string so it contains no non-word characters
+    // or unusual letters and all spaces are replaced by hyphens;
+    // based on slugify() from underscore.string (MIT)
+    // https://github.com/epeli/underscore.string
+    norm: function (str) {
+      var from  = "ąàáäâãåæăćęèéëêìíïîłńòóöôõøśșțùúüûñçżź",
+          to    = "aaaaaaaaaceeeeeiiiilnoooooosstuuuunczz",
+          regex = new RegExp('[' + from + ']', 'g');
+
+      str = str.toLowerCase().replace(regex, function (c) {
+        var i = from.indexOf(c);
+        return to.charAt(i) || '-';
+      });
+
+      str = str.replace(/[^\w\s-]/g, '');
+      str = str.replace(/[\s-_]+/g, '-');
+      return str.replace(/-$/, '');
+    },
+
     /*
      * Maths and time
      */
