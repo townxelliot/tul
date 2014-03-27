@@ -21,5 +21,6 @@ module.exports = function (grunt) {
 
   grunt.registerTask('min', ['uglify']);
   grunt.registerTask('test', ['mochaccino']);
+  grunt.registerTask('release', ['release_simple']);
   grunt.registerTask('default', ['test', 'min']);
 };
