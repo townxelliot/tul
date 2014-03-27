@@ -394,18 +394,44 @@
 
     /*
      * Extend an object;
-     * arguments 1+ are objects to extend obj with;
+     * filter is an optional function with signature filter(obj, key, value);
+     * if provided, before each property key with value value is set on obj,
+     * filter(obj, key, value) must return true.
+     * arguments after the filter are objects to extend obj with;
      * if the objects you're extending with have the same property names,
      * the "rightmost" one ends up setting the value.
      */
     ext: function (obj) {
       var self = this;
-      A.slice.call(arguments, 1).forEach(function (o) {
+      var argIdx = 1;
+      var filter;
+
+      if (typeof arguments[1] === 'function') {
+        filter = arguments[1];
+        argIdx = 2;
+      }
+
+      A.slice.call(arguments, argIdx).forEach(function (o) {
         self.forEach(o, function (v, k) {
-          obj[k] = (typeof v === 'function' ? v.bind(obj) : v);
+          if (!filter || filter(obj, k, v)) {
+            obj[k] = (typeof v === 'function' ? v.bind(obj) : v);
+          }
         });
       });
       return obj;
+    },
+
+    /**
+     * Extend an object, but only if a property is undefined
+     */
+    defaults: function (obj) {
+      var filter = function (obj, k, v) {
+        return typeof obj[k] === 'undefined';
+      };
+
+      var args = [obj, filter].concat(A.slice.call(arguments, 1));
+
+      return this.ext.apply(this, args);
     },
 
     /*

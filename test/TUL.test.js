@@ -326,6 +326,17 @@ describe('TUL', function () {
 
   });
 
+  describe('defaults()', function () {
+
+    it('should only set a default if value is undefined', function () {
+      var obj = {a: 1};
+      var expected = {a: 1, b: 2};
+      var actual = TUL.defaults(obj, {a: 3, b: 2});
+      actual.should.eql(expected);
+    });
+
+  });
+
   describe('norm()', function () {
 
     it('should normalise unusual characters, non-word characters and whitespace', function () {
