@@ -127,6 +127,28 @@
     // get an item by key
     get: function (k) {
       return this.items[k];
+    },
+
+    // sort the collection in place;
+    // fn takes a, b arguments for each pair of items in the collection
+    sortBy: function (fn) {
+      var withKeys = [];
+
+      TUL.forEach(this.items, function (v, k) {
+        withKeys.push({key: k, value: v});
+      });
+
+      var sortedArray = withKeys.sort(function (a, b) {
+        return fn(a.value, b.value);
+      });
+
+      var sorted = {};
+
+      TUL.forEach(sortedArray, function (v) {
+        return sorted[v.key] = v.value;
+      });
+
+      this.items = sorted;
     }
   };
 
