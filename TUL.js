@@ -84,6 +84,7 @@
                   function () {
                     return TUL.keygen(this.idx += 1);
                   };
+    this.sortFn = opts.sortFn;
 
     this.items = opts.items || {};
     TUL.ext(this, TUL.Ev);
@@ -95,6 +96,11 @@
     add: function (item, k) {
       k = k || this.keygen(item);
       this.items[k] = item;
+
+      if (this.sortFn) {
+        this.sortBy(this.sortFn);
+      }
+
       this.fire('add', {collection: this, key: k, item: item});
     },
 
@@ -102,6 +108,11 @@
     remove: function (k) {
       var item = this.items[k];
       delete this.items[k];
+
+      if (this.sortFn) {
+        this.sortBy(this.sortFn);
+      }
+
       this.fire('remove', {collection: this, key: k, item: item});
     },
 
