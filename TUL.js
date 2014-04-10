@@ -150,10 +150,8 @@
     // sort the collection in place;
     // fn takes a, b arguments for each pair of items in the collection
     sortBy: function (fn) {
-      var withKeys = [];
-
-      TUL.forEach(this.items, function (v, k) {
-        withKeys.push({key: k, value: v});
+      var withKeys = TUL.map(this.items, function (v, k) {
+        return {key: k, value: v};
       });
 
       var sortedArray = withKeys.sort(function (a, b) {
