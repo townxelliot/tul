@@ -311,6 +311,28 @@ describe('TUL', function () {
 
   });
 
+  describe('map()', function () {
+
+    it('should create an array by iterating over an array', function () {
+      var toIterate = [{text: 'a'}, {text: 'b'}, {text: 'c'}];
+      var expected = ['a', 'b', 'c'];
+      var actual = TUL.map(toIterate, function (v) {
+        return v.text;
+      });
+      actual.should.eql(expected);
+    });
+
+    it('should create an array by iterating over an object', function () {
+      var toIterate = {text1: 'a', text2: 'b', text3: 'c'};
+      var expected = ['text1:a', 'text2:b', 'text3:c'];
+      var actual = TUL.map(toIterate, function (v, k) {
+        return k + ':' + v;
+      });
+      actual.should.eql(expected);
+    });
+
+  });
+
   describe('chomp()', function () {
 
     it('should remove specified trailing character(s)', function () {
