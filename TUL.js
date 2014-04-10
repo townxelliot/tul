@@ -119,7 +119,7 @@
         this.fire('add', {collection: this, key: k, item: item});
       }
       else {
-        this.fire('change', {collection: this, key: k, from: olItem, to: item});
+        this.fire('change', {collection: this, key: k, from: oldItem, to: item});
       }
     },
 
