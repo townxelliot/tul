@@ -27,8 +27,8 @@ describe('TUL', function () {
         keyfield: 'fileLocation'
       });
 
-      c.add({name: 'barking', fileLocation: '/foo'});
-      c.add({name: 'trumpets', fileLocation: '/bar'});
+      c.update({name: 'barking', fileLocation: '/foo'});
+      c.update({name: 'trumpets', fileLocation: '/bar'});
 
       var expected = ['/foo', '/bar'];
       var actual = [];
@@ -42,8 +42,8 @@ describe('TUL', function () {
 
     it('should maintain its index to add to keys through serialisation', function () {
       var c = TUL.Collection();
-      c.add({name: 'Phil'});
-      c.add({name: 'Kirsty'});
+      c.update({name: 'Phil'});
+      c.update({name: 'Kirsty'});
 
       // test that items have been inserted with numbered keys
       c.find(function (item, key) {
@@ -60,7 +60,7 @@ describe('TUL', function () {
       d.asArray().length.should.equal(2);
 
       // add a new item to this new collection and check its key
-      d.add({name: 'Barry'});
+      d.update({name: 'Barry'});
       d.find(function (item, key) {
         return /\-3$/.test(key);
       }).should.eql({name: 'Barry'});
@@ -81,7 +81,7 @@ describe('TUL', function () {
         done();
       });
 
-      c.add(item, key);
+      c.update(item, key);
     });
 
     it('should fire "remove" events when items are removed', function (done) {
@@ -101,8 +101,8 @@ describe('TUL', function () {
         done();
       });
 
-      c.add(item, key);
-      c.add(item2, key2);
+      c.update(item, key);
+      c.update(item2, key2);
       c.remove(key);
     });
 
@@ -111,9 +111,9 @@ describe('TUL', function () {
       var item = {name: 'Fred'}
       var item2 = {name: 'Barney'};
       var item3 = {name: 'Wilma'};
-      c.add(item);
-      c.add(item2);
-      c.add(item3);
+      c.update(item);
+      c.update(item2);
+      c.update(item3);
 
       var expected = 'FredBarneyWilma';
 
@@ -130,9 +130,9 @@ describe('TUL', function () {
       var item = {name: 'Fred'}
       var item2 = {name: 'Barney'};
       var item3 = {name: 'Wilma'};
-      c.add(item);
-      c.add(item2);
-      c.add(item3);
+      c.update(item);
+      c.update(item2);
+      c.update(item3);
 
       var expected = [item, item2, item3];
 
@@ -143,8 +143,8 @@ describe('TUL', function () {
       var c = TUL.Collection();
       var item = {name: 'Fred'}
       var item2 = {name: 'Barney'};
-      c.add(item);
-      c.add(item2);
+      c.update(item);
+      c.update(item2);
 
       c.find(function (item) {
         return item.name === 'Barney';
@@ -413,8 +413,8 @@ describe('TUL', function () {
       var name2 = TUL.Model({first: 'Herbert', last: 'Anderson'});
       var user2 = TUL.Model({name: name2});
 
-      c.add(user1);
-      c.add(user2);
+      c.update(user1);
+      c.update(user2);
 
       var template = '{{:x}}{name.first} {name.last}<br>{{{/:x}}';
       var expected = 'Ricky Pinstripe<br>Herbert Anderson<br>';

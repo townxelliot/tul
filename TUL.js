@@ -91,19 +91,6 @@
   }
 
   Collection.prototype = {
-    // add a new item to the collection, optionally with a key;
-    // if no key is specified, one is generated using keygen()
-    add: function (item, k) {
-      k = k || this.keygen(item);
-      this.items[k] = item;
-
-      if (this.sortFn) {
-        this.sortBy(this.sortFn);
-      }
-
-      this.fire('add', {collection: this, key: k, item: item});
-    },
-
     // remove an item by key
     remove: function (k) {
       var item = this.items[k];
@@ -114,6 +101,26 @@
       }
 
       this.fire('remove', {collection: this, key: k, item: item});
+    },
+
+    // update an item by key; if the item doesn't exist, add it
+    update: function (item, k) {
+      k = k || this.keygen(item);
+
+      var oldItem = this.items[k];
+
+      this.items[k] = item;
+
+      if (this.sortFn) {
+        this.sortBy(this.sortFn);
+      }
+
+      if (!oldItem) {
+        this.fire('add', {collection: this, key: k, item: item});
+      }
+      else {
+        this.fire('change', {collection: this, key: k, from: olItem, to: item});
+      }
     },
 
     // iterate items in the collection;
