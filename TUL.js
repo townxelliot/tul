@@ -301,7 +301,7 @@
     // opts.headers: object mapping header names to values, e.g.
     // {'Content-Type': 'application/json'}
     // opts.method (default 'GET')
-    // opts.timeout (default undefined): if set, throw an error
+    // opts.timeout (default undefined): if set, cb with error
     // after opts.timeout milliseconds
     // opts.body: POST body
     // r: http request implementation; if not set, defaults
@@ -314,13 +314,16 @@
       r = r || new XMLHttpRequest();
 
       if (opts.timeout) {
+        // set the length of the timeout on the request
         r.timeout = opts.timeout;
+
+        // invoke callback if timeout occurs
         r.ontimeout = function () {
           opts.cb(new Error('request timed out after ' + opts.timeout + 'ms'));
         };
       }
 
-      // now make the request
+      // make the request
       r.onreadystatechange = function () {
         if (r.readyState === 4 && r.status < 400) {
           var resp = r.responseText;
@@ -432,7 +435,11 @@
 
     /*
      * Extend an object;
-     * filter is an optional function with signature filter(obj, key, value);
+     * call with:
+     * TUL.ext(objToExtend, obj1, obj2, ...)
+     * or
+     * TUL.ext(objToExtend, filter, obj1, obj2, ...)
+     * where filter is an optional function with signature filter(obj, key, value);
      * if provided, before each property key with value value is set on obj,
      * filter(obj, key, value) must return true.
      * arguments after the filter are objects to extend obj with;
@@ -526,6 +533,11 @@
       return str.replace(propRe, function (sub, prop) {
         var val = accessProp(data, prop);
 
+        // if there's no value for the property, use the whole
+        // data object/value itself as the value; this is how we
+        // deal with anonymous variables for marking the "current"
+        // variable at the top of the stack, e.g. for {{:x}}{{/:x}}
+        // or {.} style placeholders
         if (typeof val == 'undefined') {
           val = data;
         }
@@ -547,18 +559,18 @@
     // based on slugify() from underscore.string (MIT)
     // https://github.com/epeli/underscore.string
     norm: function (str) {
-      var from  = "ąàáäâãåæăćęèéëêìíïîłńòóöôõøśșțùúüûñçżź",
-          to    = "aaaaaaaaaceeeeeiiiilnoooooosstuuuunczz",
-          regex = new RegExp('[' + from + ']', 'g');
+      var from = "ąàáäâãåæăćęèéëêìíïîłńòóöôõøśșțùúüûñçżź";
+      var to = "aaaaaaaaaceeeeeiiiilnoooooosstuuuunczz";
+      var regex = new RegExp('[' + from + ']', 'g');
 
       str = str.toLowerCase().replace(regex, function (c) {
         var i = from.indexOf(c);
         return to.charAt(i) || '-';
       });
 
-      str = str.replace(/[^\w\s-]/g, '');
-      str = str.replace(/[\s-_]+/g, '-');
-      return str.replace(/-$/, '');
+      return str.replace(/[^\w\s-]/g, '')
+                .replace(/[\s-_]+/g, '-')
+                .replace(/-$/, '');
     },
 
     /*
@@ -574,7 +586,8 @@
       return M.round(num * multiplier) / multiplier;
     },
 
-    // zero pad a number if it's less than 10
+    // zero pad a number if it's less than 10;
+    // returns a string
     zpad: function (val) {
       return (val < 10 ? '0' + val : '' + val);
     },

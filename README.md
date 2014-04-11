@@ -1,6 +1,6 @@
 # TUL - Tiny Utilities Library
 
-"Tiny" === 5.1K when minified, 2.2K when minified + gzipped
+"Tiny" === around 5.2K when minified, 2.2K when minified + gzipped
 
 If you want something well tested which is guaranteed to work all
 the time on all browsers, this isn't it - try lodash and/or jQuery
@@ -11,7 +11,8 @@ to (mainly very up to date Chrome/Crosswalk and Firefox/Firefox OS)
 and that's the only promise I can make.
 
 It also has a slightly idiosyncratic API. I seem to end up writing
-and using the same chunks of code over and over, so I put them in here.
+and using the same chunks of code over and over, so I put them in here,
+hence the apparently random bundle of functions.
 
 I will probably add/remove stuff to this as I think of it and change
 my mind.
@@ -44,6 +45,7 @@ matching elements) rather than a NodeList
 *   TUL.req(): Ajax request
 *   TUL.jsonp(): JSONP request
 *   TUL.ext(): extend an object with other objects
+*   TUL.defaults(): set undefined object properties to default values
 *   TUL.each(): iterate object properties
 *   TUL.tpl(): very simple templating (iterators and properties, no filters)
 *   TUL.keygen(): key generating function which generates
@@ -54,13 +56,17 @@ if you use it for database keys which are written from multiple pages)
 *   Array.map(): similar to Underscore's _.map() function
 *   TUL.chomp(): remove trailing character from a string (useful for
 making URLs)
+*   TUL.norm(): normalise a string by removing non-word characters,
+replacing accented characters with equivalents without accents,
+replacing spaces with hyphens, and lowercasing; useful for creating
+keys/URL slugs
 *   TUL.round(): round a number
 *   TUL.zpad(): zero pad a number &lt; 10
 *   TUL.timefmt(): format seconds to "HH:MM:ss"
 *   TUL.Ev(): prototype which can be used to add on()/off()/fire() methods
 to an object (mix it into an object with TUL.ext())
 *   TUL.Collection/TUL.Model: factory functions to create event-firing
-collections/models
+collections/models, e.g. TUL.ext(MyObject, TUL.Model())
 
 See the source for details (I may get round to some automated docs
 eventually).
