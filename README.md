@@ -46,7 +46,7 @@ matching elements) rather than a NodeList
 *   TUL.jsonp(): JSONP request
 *   TUL.ext(): extend an object with other objects
 *   TUL.defaults(): set undefined object properties to default values
-*   TUL.each(): iterate object properties
+*   TUL.forEach(): iterate object properties
 *   TUL.tpl(): very simple templating (iterators and properties, no filters)
 *   TUL.keygen(): key generating function which generates
 unique random keys (though not unique across multiple TUL instances, e.g.
