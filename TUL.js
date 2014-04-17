@@ -227,7 +227,7 @@
     },
 
     /*
-     * Array methods; these are added to all arrays as shims
+     * Array/object methods; these are added to all arrays as shims
      * if the corresponding Array methods don't exist
      */
     // iterate the elements of the array or object arr;
