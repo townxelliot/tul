@@ -180,6 +180,7 @@
     set: function (prop, val) {
       var oldValue = accessProp(this, prop, val);
       this.fire('change', {model: this, prop: prop, from: oldValue, to: val});
+      this.fire('change:' + prop, {model: this, from: oldValue, to: val});
     },
 
     // get value for property prop from this model; if the value is
