@@ -97,7 +97,7 @@
       delete this.items[k];
 
       if (this.sortFn) {
-        this.sortBy(this.sortFn);
+        this.sortBy(this.sortFn.bind(this));
       }
 
       this.fire('remove', {collection: this, key: k, item: item});
@@ -112,7 +112,7 @@
       this.items[k] = item;
 
       if (this.sortFn) {
-        this.sortBy(this.sortFn);
+        this.sortBy(this.sortFn.bind(this));
       }
 
       if (!oldItem) {
