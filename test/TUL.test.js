@@ -151,6 +151,41 @@ describe('TUL', function () {
       }).should.eql(item2);
     });
 
+    it('should sort itself as new items are added if sortFn is set', function () {
+      var sortFn = function (a, b) {
+        if (a.track > b.track) {
+          return 1;
+        }
+        else if (b.track > a.track) {
+          return -1;
+        }
+        return 0;
+      };
+
+      var c = TUL.Collection({
+        sortFn: sortFn
+      });
+
+      var numItems = 100;
+
+      // this will contain items with ascending track values
+      var expected = [];
+
+      for (var i = 1; i <= numItems; i++) {
+        var item = {track: i};
+        expected.push(item);
+      }
+
+      // now we push the items from expected into the collection,
+      // in reverse order; but they should be ordered correctly
+      // by the time we're finished
+      for (i = numItems-1; i >= 0; i--) {
+        c.update(expected[i]);
+      }
+
+      c.asArray().should.eql(expected);
+    });
+
   });
 
   describe('Model', function () {
