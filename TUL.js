@@ -103,7 +103,8 @@
       this.fire('remove', {collection: this, key: k, item: item});
     },
 
-    // update an item by key; if the item doesn't exist, add it
+    // update an item by key; if the item doesn't exist, this will
+    // do an add
     update: function (item, k) {
       k = k || this.keygen(item);
 
@@ -211,7 +212,14 @@
       var nodes = [];
 
       if (doc) {
-        var nodeList = doc.querySelectorAll(sel, ctx || doc);
+        var nodeList;
+
+        if (ctx) {
+          nodeList = ctx.querySelectorAll(sel);
+        }
+        else {
+          nodeList = doc.querySelectorAll(sel);
+        }
 
         if (nodeList.length == 1) {
           nodes = nodeList.item(0);
