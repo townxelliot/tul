@@ -1,6 +1,6 @@
 # TUL - Tiny Utilities Library
 
-"Tiny" === around 5.2K when minified, 2.2K when minified + gzipped
+"Tiny" === around 5.6K when minified, 2.3K when minified + gzipped
 
 If you want something well tested which is guaranteed to work all
 the time on all browsers, this isn't it - try lodash and/or jQuery
@@ -54,6 +54,7 @@ if you use it for database keys which are written from multiple pages)
 *   TUL.find(): find items in a collection which satisfy a test function
 *   Array.forEach(), Array.find(): shims for ES6 array methods
 *   Array.map(): similar to Underscore's _.map() function
+*   TUL.debounce(): same as Underscore's _.debounce() function
 *   TUL.isArray(): check whether a value is an array
 *   TUL.chomp(): remove trailing character from a string (useful for
 making URLs)

@@ -564,6 +564,38 @@
     },
 
     /*
+     * Functions
+     */
+
+    // from Underscore.js (MIT licence)
+    // http://underscorejs.org/
+    // call func() at most once every wait seconds
+    debounce: function (func, wait, immediate) {
+	    var timeout = null;
+
+	    return function() {
+		    var context = this;
+		    var args = arguments;
+
+		    var later = function () {
+			    if (!immediate) {
+			      func.apply(context, args);
+			    }
+		    };
+
+		    var callNow = immediate && !timeout;
+
+		    clearTimeout(timeout);
+
+		    timeout = setTimeout(later, wait);
+
+		    if (callNow) {
+		      func.apply(context, args);
+		    }
+	    };
+    },
+
+    /*
      * Strings
      */
     // remove sub from the end of str
