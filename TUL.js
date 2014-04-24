@@ -569,32 +569,53 @@
 
     // from Underscore.js (MIT licence)
     // http://underscorejs.org/
-    // the returned function can only be called at most once
-    // every wait ms
-    debounce: function (func, wait, immediate) {
-	    var timeout;
+    /*
+     * "Returns a function, that, when invoked, will only be triggered
+     * at most once during a given window of time. Normally, the
+     * throttled function will run as much as it can, without ever
+     * going more than once per wait duration; but if you’d like to
+     * disable the execution on the leading edge, pass {leading: false}.
+     * To disable execution on the trailing edge, ditto."
+     */
+    throttle: function (func, wait, options) {
+      var context;
+      var args;
+      var result;
+      var timeout = null;
+      var previous = 0;
 
-	    return function () {
-		    var context = this;
-		    var args = arguments;
+      options || (options = {});
 
-		    var later = function () {
-			    if (!immediate) {
-			      timeout = null;
-			      func.apply(context, args);
-			    }
-		    };
+      var later = function () {
+        previous = options.leading === false ? 0 : new Date();
+        timeout = null;
+        result = func.apply(context, args);
+        context = args = null;
+      };
 
-		    var callNow = immediate && !timeout;
+      return function () {
+        var now = new Date();
+        if (!previous && options.leading === false) {
+          previous = now;
+        }
+        var remaining = wait - (now - previous);
 
-		    clearTimeout(timeout);
+        context = this;
+        args = arguments;
 
-		    timeout = setTimeout(later, wait);
+        if (remaining <= 0) {
+          clearTimeout(timeout);
+          timeout = null;
+          previous = now;
+          result = func.apply(context, args);
+          context = args = null;
+        }
+        else if (!timeout && options.trailing !== false) {
+          timeout = setTimeout(later, remaining);
+        }
 
-		    if (callNow) {
-		      func.apply(context, args);
-		    }
-	    };
+        return result;
+      };
     },
 
     /*

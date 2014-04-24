@@ -54,7 +54,8 @@ if you use it for database keys which are written from multiple pages)
 *   TUL.find(): find items in a collection which satisfy a test function
 *   Array.forEach(), Array.find(): shims for ES6 array methods
 *   Array.map(): similar to Underscore's _.map() function
-*   TUL.debounce(): same as Underscore's _.debounce() function
+*   TUL.throttle(): same as Underscore's _.throttle() function - restrict
+a function so it can only be invoked every N ms
 *   TUL.isArray(): check whether a value is an array
 *   TUL.chomp(): remove trailing character from a string (useful for
 making URLs)
