@@ -556,6 +556,14 @@
     },
 
     /*
+     * Value testing
+     */
+    isArray: function (v) {
+      return v && typeof v == 'object' && typeof v.length == 'number' &&
+        toString.call(v) == '[object Array]';
+    },
+
+    /*
      * Strings
      */
     // remove sub from the end of str
