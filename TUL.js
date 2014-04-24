@@ -569,16 +569,18 @@
 
     // from Underscore.js (MIT licence)
     // http://underscorejs.org/
-    // call func() at most once every wait seconds
+    // the returned function can only be called at most once
+    // every wait ms
     debounce: function (func, wait, immediate) {
-	    var timeout = null;
+	    var timeout;
 
-	    return function() {
+	    return function () {
 		    var context = this;
 		    var args = arguments;
 
 		    var later = function () {
 			    if (!immediate) {
+			      timeout = null;
 			      func.apply(context, args);
 			    }
 		    };
