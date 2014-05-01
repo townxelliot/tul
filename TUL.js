@@ -17,23 +17,18 @@
 
   // get/set a property for Model recursively;
   // if val is set, it sets the property and returns the previous
-  // value; if val is not set, it returns the current value;
-  // vs: set to true if a value is set (used for the recursive
-  // calls to prevent a value being overwritten with undefined if val
-  // was never specified)
-  var accessProp = function (model, prop, val, vs) {
-    vs = vs || (arguments.length == 2 ? false : true);
-
+  // value; if val is not set, it returns the current value
+  var accessProp = function (model, prop, vs, val) {
     var dotPos = prop.indexOf('.');
     if (dotPos != -1) {
       var head = prop.slice(0, dotPos);
       var rest = prop.slice(dotPos + 1);
 
       if (typeof model.get == 'function') {
-        return accessProp(model.get(head), rest, val, vs);
+        return accessProp(model.get(head), rest, vs, val);
       }
       else {
-        return accessProp(model[head], rest, val, vs);
+        return accessProp(model[head], rest, vs, val);
       }
     }
     else {
@@ -43,7 +38,7 @@
         return curr;
       }
 
-      if (typeof model.props == 'object') {
+      if (model instanceof Model && typeof model.props == 'object') {
         curr = model.props[prop];
 
         if (vs) {
@@ -179,7 +174,7 @@
     // recursively set a property; if prop contains '.', will recurse
     // down into any embedded models to find the property to change
     set: function (prop, val) {
-      var oldValue = accessProp(this, prop, val);
+      var oldValue = accessProp(this, prop, true, val);
       this.fire('change', {model: this, prop: prop, from: oldValue, to: val});
       this.fire('change:' + prop, {model: this, from: oldValue, to: val});
     },

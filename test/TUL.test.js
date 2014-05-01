@@ -465,7 +465,7 @@ describe('TUL', function () {
       var c = TUL.Collection();
 
       var name1 = TUL.Model({first: 'Ricky', last: 'Pinstripe'});
-      var user1 = TUL.Model({name: name2});
+      var user1 = TUL.Model({name: name1});
 
       var name2 = TUL.Model({first: 'Herbert', last: 'Anderson'});
       var user2 = TUL.Model({name: name2});
@@ -473,9 +473,11 @@ describe('TUL', function () {
       c.update(user1);
       c.update(user2);
 
-      var template = '{{:x}}{name.first} {name.last}<br>{{{/:x}}';
+      var template = '{{:x}}{name.first} {name.last}<br>{{/:x}}';
       var expected = 'Ricky Pinstripe<br>Herbert Anderson<br>';
       var actual = TUL.tpl(template, c);
+      console.log(actual);
+      actual.should.equal(expected);
     });
 
     it('should interpolate falsy values', function () {
@@ -486,13 +488,12 @@ describe('TUL', function () {
       actual.should.equal(expected);
     });
 
-    it('should give the same value for multiple references to a property in a template', function () {
+    it('should give the same value for multiple references to a nested property in a template', function () {
       var model = [{fields: {reporter: {name: 'ElliotSmith'}}}, {fields: {reporter: {name: 'JackSprat'}}}];
       var template = '{{:x}}<a href="http://nowhere.place/?user={fields.reporter.name}">{fields.reporter.name}</a>{{/:x}}';
       var expected = '<a href="http://nowhere.place/?user=ElliotSmith">ElliotSmith</a><a href="http://nowhere.place/?user=JackSprat">JackSprat</a>';
       var actual = TUL.tpl(template, model);
       actual.should.equal(expected);
-
     });
 
   });
