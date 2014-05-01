@@ -486,6 +486,15 @@ describe('TUL', function () {
       actual.should.equal(expected);
     });
 
+    it('should give the same value for multiple references to a property in a template', function () {
+      var model = [{fields: {reporter: {name: 'ElliotSmith'}}}, {fields: {reporter: {name: 'JackSprat'}}}];
+      var template = '{{:x}}<a href="http://nowhere.place/?user={fields.reporter.name}">{fields.reporter.name}</a>{{/:x}}';
+      var expected = '<a href="http://nowhere.place/?user=ElliotSmith">ElliotSmith</a><a href="http://nowhere.place/?user=JackSprat">JackSprat</a>';
+      var actual = TUL.tpl(template, model);
+      actual.should.equal(expected);
+
+    });
+
   });
 
 });
