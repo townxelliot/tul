@@ -265,6 +265,25 @@ describe('TUL', function () {
       m.get('permissions').should.eql(['eat', 'drink']);
     });
 
+    it('should modify the props property internally, not set properties directly on the object', function () {
+      var m = TUL.Model({name: 'Ricky'});
+      m.get('name').should.eql('Ricky');
+      expect(m.name).to.be.undefined;
+    });
+
+    it('should not set properties directly on Model subclasses', function () {
+      var Person = function (name) {
+        TUL.ext(this, TUL.Model());
+        this.set('name', name);
+      };
+
+      var m = new Person('Ricky');
+
+      m.get('name').should.eql('Ricky');
+
+      expect(m.name).to.be.undefined;
+    });
+
   });
 
   describe('forEach()', function () {
@@ -476,7 +495,6 @@ describe('TUL', function () {
       var template = '{{:x}}{name.first} {name.last}<br>{{/:x}}';
       var expected = 'Ricky Pinstripe<br>Herbert Anderson<br>';
       var actual = TUL.tpl(template, c);
-      console.log(actual);
       actual.should.equal(expected);
     });
 

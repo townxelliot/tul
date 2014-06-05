@@ -38,7 +38,7 @@
         return curr;
       }
 
-      if (model instanceof Model && typeof model.props == 'object') {
+      if (typeof model.props == 'object') {
         curr = model.props[prop];
 
         if (vs) {
