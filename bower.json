@@ -1,7 +1,7 @@
 {
   "name": "tul",
   "main": "TUL.js",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "Tiny Utilities Library",
   "homepage": "https://github.com/townxelliot/tul",
   "authors": [
