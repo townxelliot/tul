@@ -96,3 +96,5 @@ Test coverage is far from 100%.
 # Licence
 
 [MIT](http://opensource.org/licenses/MIT) - see LICENCE-MIT
+
+Contains parts of underscore (MIT), microevent (MIT) and underscore.string (MIT). See code comments for details.
